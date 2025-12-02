@@ -57,24 +57,11 @@ print(f"found {len(invalid_codes)} invalid codes, sum: {sum(invalid_codes)}")
 # Notes
 # - ranges are inclusive
 # - Mirror numbers always have an even number of digits
-#
-# The lower and upper bounds for our mirror numbers are given by the range,
-# but its the smallest mirror number that exists that is >= to the start
-# and <= to the end
-#
 # - start at the next even-digit number starting from the input, if the input is an odd
-#   9 - 340, next even digit number: 10
-#   - n digit even number, 10 ** n
+#   example: 9 - 340, next even digit number: 10
+#   - n digit number where n odd, 10 ** n is the next even - digits - numbre
 #
-# - if its an even digit number, start at
-#   - the first half, as an int?
-#   - the second half, as an int?
-#
-#   - start at the first part + 1 if the second part is larger
-#       - might be too complicated, just start the first part for now
+# - if its an even digit number, start at the first half of the digits
 #
 # - start generating mirror numbers, check if they are in the range
 # and add them to the count
-#
-# 1022-4568 -
-#

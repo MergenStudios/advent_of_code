@@ -1,5 +1,8 @@
 import sys
 
+CREATE_ANIMATION = True
+ANIMATION_FRAME = 0
+
 
 # usefull for debugging
 def print_field(field):
@@ -15,6 +18,44 @@ def print_surroundings(surroundings):
     )
 
 
+def create_animation_frame(field):
+    global ANIMATION_FRAME
+
+    dimension = len(field[0]) - 2
+    with open(f"./animation/{ANIMATION_FRAME}.ppm", "wb") as f:
+        f.write(b"P6\n")
+        f.write(f"{dimension} {dimension}".encode("ascii"))
+        f.write(b"255\n")
+
+        ANIMATION_FRAME += 1
+
+
+# int main(int argc, char **argv) {
+#     if (argc != 2) {
+#        printf("Wrong number of arguments: %d", argc);
+#        return 1;
+#     }
+
+#     FILE *f = fopen("./out.ppm", "wb");
+#     int w = 100;
+#     int h = 100;
+
+
+#     fprintf(f, "P6\n");
+#     fprintf(f, "%d %d\n", w, h);
+#     fprintf(f, "255\n");
+
+#     for (int y = 0; y < h; y++) {
+#         for (int x = 0; x < w; x++) {
+#             fputc(0x00, f);
+#             fputc(0xFF, f);
+#             fputc(0x00, f);
+#         }
+#     }
+
+
+#     fclose(f);
+# }
 # takes in a padded field and returns
 # the amount of paper stacks which are acessible
 def count_acessible(field, replace=False):
@@ -35,7 +76,13 @@ def count_acessible(field, replace=False):
             if surrounding.count("@") <= 3 and line[x] == "@":
                 if replace:
                     field[y][x] = "."
+
                 count += 1
+
+    if replace and CREATE_ANIMATION:
+        # crate animation frame if replace is true
+        pass
+
     return count
 
 

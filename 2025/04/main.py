@@ -2,6 +2,7 @@ import sys
 
 CREATE_ANIMATION = True
 ANIMATION_FRAME = 0
+ANIMATION_SCALE = 10
 
 
 # usefull for debugging
@@ -21,41 +22,25 @@ def print_surroundings(surroundings):
 def create_animation_frame(field):
     global ANIMATION_FRAME
 
-    dimension = len(field[0]) - 2
-    with open(f"./animation/{ANIMATION_FRAME}.ppm", "wb") as f:
+    dimension = (len(field[0]) - 2) * ANIMATION_SCALE
+    with open(f"./animation/{ANIMATION_FRAME:02d}.ppm", "wb") as f:
         f.write(b"P6\n")
-        f.write(f"{dimension} {dimension}".encode("ascii"))
+        f.write(f"{dimension} {dimension}\n".encode("ascii"))
         f.write(b"255\n")
-
+        
+        for y in range(dimension):
+            for x in range(dimension):
+                cell = field[y // ANIMATION_SCALE][x // ANIMATION_SCALE]
+                pixel = (0, 0, 0)
+                
+                if cell == "@":
+                    pixel = (255, 0, 0)
+                    
+                f.write(bytes(pixel))
+                
         ANIMATION_FRAME += 1
 
 
-# int main(int argc, char **argv) {
-#     if (argc != 2) {
-#        printf("Wrong number of arguments: %d", argc);
-#        return 1;
-#     }
-
-#     FILE *f = fopen("./out.ppm", "wb");
-#     int w = 100;
-#     int h = 100;
-
-
-#     fprintf(f, "P6\n");
-#     fprintf(f, "%d %d\n", w, h);
-#     fprintf(f, "255\n");
-
-#     for (int y = 0; y < h; y++) {
-#         for (int x = 0; x < w; x++) {
-#             fputc(0x00, f);
-#             fputc(0xFF, f);
-#             fputc(0x00, f);
-#         }
-#     }
-
-
-#     fclose(f);
-# }
 # takes in a padded field and returns
 # the amount of paper stacks which are acessible
 def count_acessible(field, replace=False):
@@ -80,8 +65,8 @@ def count_acessible(field, replace=False):
                 count += 1
 
     if replace and CREATE_ANIMATION:
-        # crate animation frame if replace is true
-        pass
+        create_animation_frame(field)
+        print(f"wrote frame {ANIMATION_FRAME}")
 
     return count
 
@@ -114,3 +99,10 @@ while p2_curr > 0:
     p2_curr = count_acessible(field, replace=True)
 
 print(f"part 1: {p1_total}, part 2: {p2_total}")
+
+if CREATE_ANIMATION:
+    # call ffmpeg to join together the frames
+    import os
+    os.system("ffmpeg -y -framerate 5 -i \"./animation/%02d.ppm\" ./animation/out.mp4")
+    os.system("mpv ./animation/out.mp4")
+    os.system("rm ./animation/*")
